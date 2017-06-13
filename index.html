@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+<!-- three.js library -->
+<script src='libs/three.min.js'></script>
+<!--<script src="libs/stats.min.js"></script>--><!-- re-enable to allow fps graphing-->
+<!-- ar.js -->
+<script src="libs/ar.min.js"></script>
+<script>THREEx.ArToolkitContext.baseURL = '/ARapp2/'</script> <!--blank because of directory structure -->
+<!--video texture extension-->
+<script src= "libs/threex.videotexture.js"></script>
+
+<body style='margin : 0px; overflow: hidden; font-family: Arial;'><div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1;'>
+	<a href="https://github.com/petomi/ARapp2" target="_blank">ARapp2</a> - WV APP demo 2 - Created by Michael Peto, 2017.
+	<br/>
+
+</div><script>
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Init
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// init renderer//
+	var renderer	= new THREE.WebGLRenderer({
+		// antialias	: true,
+		alpha: true
+	});
+	renderer.setClearColor(new THREE.Color('white'), 0);
+	// renderer.setPixelRatio( 1/2 );
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.domElement.style.position = 'absolute';
+	renderer.domElement.style.top = '0px';
+	renderer.domElement.style.left = '0px';
+	document.body.appendChild( renderer.domElement );
+
+	// array of functions for the rendering loop
+	var onRenderFcts= [];
+
+	// init scene and camera
+	var scene	= new THREE.Scene();
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		Initialize a basic camera in 3d scene
+	//////////////////////////////////////////////////////////////////////////////////
+
+	// Create a camera
+	var camera = new THREE.PerspectiveCamera(); //change from just Camera() to PerspectiveCamera() or OrthographicCamera()?
+	scene.add(camera);
+
+	////////////////////////////////////////////////////////////////////////////////
+	//          handle arToolkitSource, define media input
+	////////////////////////////////////////////////////////////////////////////////
+
+	var arToolkitSource = new THREEx.ArToolkitSource({
+		// to read from the webcam
+		sourceType : 'webcam',
+
+		// to read from an image
+		// sourceType : 'image',
+		// sourceUrl : THREEx.ArToolkitContext.baseURL + 'data/images/img.jpg',
+
+		// to read from a video
+		// sourceType : 'video',
+		// sourceUrl : THREEx.ArToolkitContext.baseURL + 'data/videos/headtracking.mp4',
+	});
+
+	arToolkitSource.init(function onReady(){
+		// handle resize of renderer
+		arToolkitSource.onResize(renderer.domElement);
+	});
+
+	// handle resize
+	window.addEventListener('resize', function(){
+		// handle arToolkitSource resize
+		arToolkitSource.onResize(renderer.domElement);
+	});
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	//          initialize arToolkitContext
+	////////////////////////////////////////////////////////////////////////////////
+
+	// create atToolkitContext
+	var arToolkitContext = new THREEx.ArToolkitContext({
+		cameraParametersUrl: THREEx.ArToolkitContext.baseURL + 'data/data/camera_para.dat',
+		detectionMode: 'mono',
+		maxDetectionRate: 30,
+		canvasWidth: 80*3,
+		canvasHeight: 60*3,
+	});
+	// initialize it
+	arToolkitContext.init(function onCompleted(){
+		// copy projection matrix to camera
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+	});
+
+	// update artoolkit on every frame
+	onRenderFcts.push(function(){
+		if( arToolkitSource.ready === false )	return
+
+		arToolkitContext.update( arToolkitSource.domElement )
+	});
+
+
+	////////////////////////////////////////////////////////////////////////////////
+	//          Create a ArMarkerControls
+	////////////////////////////////////////////////////////////////////////////////
+
+
+	//Creates marker and AR toolkit controls for each one
+	function createMarker(markerName, type, pattLocation, arToolkitContext){
+		markerName = new THREE.Group;
+		scene.add(markerName);
+		var artoolkitMarker = new THREEx.ArMarkerControls(arToolkitContext, markerName, {
+			type: type,
+			patternUrl: THREEx.ArToolkitContext.baseURL + pattLocation
+		});
+		return markerName;
+	}
+
+	//Actually Create each marker needed. ADD A NEW ONE FOR EACH IMAGE
+	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
+	markerRoot = createMarker('markerRoot', 'pattern', 'data/data/patt.wv', arToolkitContext); //MARKER 1
+	markerRoot2 = createMarker('markerRoot2', 'pattern', 'data/data/patt.2', arToolkitContext); //MARKER 2
+	markerRoot3 = createMarker('markerRoot3', 'pattern', 'data/data/patt.3', arToolkitContext); //MARKER 3
+	markerRoot4 = createMarker('markerRoot4', 'pattern', 'data/data/patt.wvcross', arToolkitContext); //MARKER 4
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		add an object in the scene
+	//////////////////////////////////////////////////////////////////////////////////
+
+	//creates six sided texture using whatever file is passed in
+	function createCubeTexture(texture){
+		var cubeMaterials = [
+			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
+			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
+			new THREE.MeshBasicMaterial({map: texture, transparent:false}), //this is the front facing side of the cube
+			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
+			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
+			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
+		];
+		return cubeMaterials;
+	}
+
+	//creates cube geometry and adds to render list
+	function createCubeGeometry(cubeMaterials, name, markerName){
+		var geometry = new THREE.BoxGeometry(4,0.12,4); //make it a short plane, not a cube
+		nameToBe = name;
+		name =  new THREE.Mesh(geometry, cubeMaterials);
+		name.name = nameToBe;
+		name.position.z = -1.0; //distance up from AR marker
+		name.position.y	= 0.05; //distance from AR marker
+		markerName.add( name ); //add finished cube to render queue on marker root
+	}
+
+	//Object generator, creates cube above AR marker, using async texture loading to stream in texture
+	function createCube(texturePath, name, markerName){
+		var loader = new THREE.TextureLoader();
+		loader.load(
+			texturePath,
+			function(texture){
+				texture.minFilter = THREE.LinearFilter; //avoid resizing to power of two
+				cubeMaterials = createCubeTexture(texture);
+				createCubeGeometry(cubeMaterials, name, markerName);
+			}
+		);
+	}
+
+	//Object generator, creates video cube above AR marker (VideoTexture automatically uses async streaming)
+	function createVideoCube(videoPath, name, markerName){
+		var videoTexture = new THREEx.VideoTexture(videoPath);
+		var video = videoTexture.video;
+		videoTexture.texture.minFilter = THREE.LinearFilter; //filter texture to avoid resizing to power of two
+		onRenderFcts.push(function(delta, now){
+			videoTexture.update(delta, now);
+		});
+		cubeMaterials = createCubeTexture(videoTexture.texture);
+		createCubeGeometry(cubeMaterials, name, markerName);
+		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
+	}
+
+	//actually create objects. Add one of these for every new marker, with a different name
+	createVideoCube('vid/kwasi.mp4', 'cube', markerRoot); //VIDEO 1
+	createVideoCube('vid/tanvir.mp4', 'cube2', markerRoot2); //IMAGE 2
+	createVideoCube('vid/farzana.mp4', 'cube3', markerRoot3); // IMAGE 3
+	createVideoCube('vid/handsome.mp4', 'cube4', markerRoot4);//IMAGE 4
+
+	///////////////////////////////////////////////////
+	//	CLICK HANDLING
+	//////////////////////////////////////////////////
+
+	//Manual THREE.js raycasting implementation using event handlers
+	function onMouseDown(event){
+		event.preventDefault();
+		raycaster = new THREE.Raycaster();
+		mouse = new THREE.Vector2();
+
+		//update mouse vector from its position when the click/tap event takes place
+		mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+		mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+		raycaster.setFromCamera(mouse, camera); //cast ray in direction of mouse click
+		//raycaster.far = Infinity;
+
+		var intersects = raycaster.intersectObjects( scene.children, true ); //see if ray intersects any rendered objects
+
+		if(intersects.length > 0){
+			//console.log(intersects[0].object); //re-enable to debug, prints out object that is hit by ray
+
+			//handle different click cases based on which object is clicked (using object.name property)
+			//ADD A NEW CASE FOR EACH QR CODE
+			switch(intersects[ 0 ].object.name){
+				case 'cube':
+					window.open('https://catalogue.worldvision.ca/products/5903250', 'Sponsor Kwasi'); //LINK 1
+					break;
+				case 'cube2':
+					window.open('https://catalogue.worldvision.ca/products/5196430', 'Sponsor Tanvir'); //LINK 2
+					break;
+				case 'cube3':
+					window.open('https://catalogue.worldvision.ca/products/5770018', 'Sponsor Farzana'); //LINK 3
+					break;
+				case 'cube4':
+					window.open('https://catalogue.worldvision.ca/products/5733213', 'Sponsor Handsome'); //LINK 4
+					break;
+				default:
+					break;
+			}
+		}
+		//console.log('Click detected.'); //re-enable to debug
+	}
+
+	//add event listener waiting for mobile touch and translate coordinates to click
+	document.addEventListener('touchstart', function(e){
+		clientX = e.touches[0].clientX;
+		clientY = e.touches[0].clientY;
+	}, false);
+	document.addEventListener('click', onMouseDown, false);
+
+
+	//////////////////////////////////////////////////////////////////////////////////
+	//		render the whole thing on the page
+	//////////////////////////////////////////////////////////////////////////////////
+
+	////enables fps graph
+	//var stats = new Stats();
+	//document.body.appendChild( stats.dom );
+	// render the scene
+	onRenderFcts.push(function(){
+		renderer.render( scene, camera );
+		//stats.update(); //uncomment to enable fps graph
+	})
+
+	// run the rendering loop
+	var lastTimeMsec= null;
+	requestAnimationFrame(function animate(nowMsec){
+		// keep looping
+		requestAnimationFrame( animate );
+		// measure time
+		lastTimeMsec	= lastTimeMsec || nowMsec-1000/60;
+		var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec);
+		lastTimeMsec	= nowMsec;
+		// call each update function
+		onRenderFcts.forEach(function(onRenderFct){
+			onRenderFct(deltaMsec/1000, nowMsec/1000);
+		})
+	})
+</script></body>
