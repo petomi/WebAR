@@ -2,22 +2,26 @@
 <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 <!-- three.js library -->
 <script src='libs/three.min.js'></script>
-<!--<script src="libs/stats.min.js"></script>--><!-- re-enable to allow fps graphing-->
+
+<!-- stats library (enable for performance monitoring overlay) -->
+<!--<script src="libs/stats.min.js"></script>-->
+
 <!-- ar.js -->
 <script src="libs/ar.min.js"></script>
 <script>THREEx.ArToolkitContext.baseURL = '/ARapp2/'</script> <!--blank because of directory structure -->
+
 <!--video texture extension-->
 <script src= "libs/threex.videotexture.js"></script>
 
 <body style='margin : 0px; overflow: hidden; font-family: Arial;'><div style='position: absolute; top: 10px; width:100%; text-align: center; z-index: 1;'>
-	<a href="https://github.com/petomi/ARapp2" target="_blank">ARapp2</a> - WV APP demo 2 - Created by Michael Peto, 2017.
-	<br/>
-
-</div><script>
+<script>
 
 	//////////////////////////////////////////////////////////////////////////////////
 	//		Init
 	//////////////////////////////////////////////////////////////////////////////////
+	//Init config file//
+	//TODO: open and parse config file, load results into object
+
 
 	// init renderer//
 	var renderer	= new THREE.WebGLRenderer({
@@ -32,10 +36,10 @@
 	renderer.domElement.style.left = '0px';
 	document.body.appendChild( renderer.domElement );
 
-	// array of functions for the rendering loop
+	// initialize array of functions for the rendering loop
 	var onRenderFcts= [];
 
-	// init scene and camera
+	// init scene
 	var scene	= new THREE.Scene();
 
 	//////////////////////////////////////////////////////////////////////////////////
@@ -47,12 +51,12 @@
 	scene.add(camera);
 
 	////////////////////////////////////////////////////////////////////////////////
-	//          handle arToolkitSource, define media input
+	//          handle arToolkitSource, define media input stream
 	////////////////////////////////////////////////////////////////////////////////
 
 	var arToolkitSource = new THREEx.ArToolkitSource({
 		// to read from the webcam
-		sourceType : 'webcam',
+		sourceType : 'webcam', //TODO: pull sourceType from config file
 
 		// to read from an image
 		// sourceType : 'image',
@@ -79,7 +83,7 @@
 	//          initialize arToolkitContext
 	////////////////////////////////////////////////////////////////////////////////
 
-	// create atToolkitContext
+	// create atToolkitContext with default values
 	var arToolkitContext = new THREEx.ArToolkitContext({
 		cameraParametersUrl: THREEx.ArToolkitContext.baseURL + 'data/data/camera_para.dat',
 		detectionMode: 'mono',
@@ -105,7 +109,6 @@
 	//          Create a ArMarkerControls
 	////////////////////////////////////////////////////////////////////////////////
 
-
 	//Creates marker and AR toolkit controls for each one
 	function createMarker(markerName, type, pattLocation, arToolkitContext){
 		markerName = new THREE.Group;
@@ -117,6 +120,7 @@
 		return markerName;
 	}
 
+	//TODO: pull these from config file as array, loop through array and for each, call createMarker with the correct variables
 	//Actually Create each marker needed. ADD A NEW ONE FOR EACH IMAGE
 	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
 	markerRoot = createMarker('markerRoot', 'pattern', 'data/data/patt.wv', arToolkitContext); //MARKER 1
@@ -154,7 +158,7 @@
 	}
 
 	//Object generator, creates cube above AR marker, using async texture loading to stream in texture
-	function createCube(texturePath, name, markerName){
+	function createImageCube(texturePath, name, markerName){
 		var loader = new THREE.TextureLoader();
 		loader.load(
 			texturePath,
@@ -179,6 +183,7 @@
 		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
 	}
 
+	//TODO: pull these from config file as array, loop through array and for each, create videoCube with the correct variables; also have a possible createCube
 	//actually create objects. Add one of these for every new marker, with a different name
 	createVideoCube('vid/kwasi.mp4', 'cube', markerRoot); //VIDEO 1
 	createVideoCube('vid/tanvir.mp4', 'cube2', markerRoot2); //IMAGE 2
@@ -206,6 +211,7 @@
 		if(intersects.length > 0){
 			//console.log(intersects[0].object); //re-enable to debug, prints out object that is hit by ray
 
+			//TODO: pull the links from the same place as the cube types; these should each be objects and object1.link should be under case 1, etc. constructor loop!
 			//handle different click cases based on which object is clicked (using object.name property)
 			//ADD A NEW CASE FOR EACH QR CODE
 			switch(intersects[ 0 ].object.name){
