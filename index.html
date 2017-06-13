@@ -112,16 +112,7 @@
 		return markerName;
 	}
 
-	//TODO: pull these from config file as array, loop through array and for each, call createMarker with the correct variables; String(markerRoot + [i]), pattern, ...URL TO IMAGE DATA FROM FILE..., arToolkitContext
-	//Actually Create each marker needed. ADD A NEW ONE FOR EACH IMAGE
-	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
-	markerRoot = createMarker('markerRoot', 'pattern', 'data/data/patt.wv', arToolkitContext); //MARKER 1
-	/*markerRoot2 = createMarker('markerRoot2', 'pattern', 'data/data/patt.2', arToolkitContext); //MARKER 2*/
-	markerRoot3 = createMarker('markerRoot3', 'pattern', 'data/data/patt.3', arToolkitContext); //MARKER 3
-	markerRoot4 = createMarker('markerRoot4', 'pattern', 'data/data/patt.wvcross', arToolkitContext); //MARKER 4
-
-
-	//////////////////////////////////////////////////////////////////////////////////
+		//////////////////////////////////////////////////////////////////////////////////
 	//		add an object in the scene
 	//////////////////////////////////////////////////////////////////////////////////
 
@@ -175,12 +166,17 @@
 		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
 	}
 
+	//TODO: pull these from config file as array, loop through array and for each, call createMarker with the correct variables; String(markerRoot + [i]), pattern, ...URL TO IMAGE DATA FROM FILE..., arToolkitContext
 	//TODO: pull these from config file as array, loop through array and for each, create videoCube with the correct variables; also have a possible createCube
+	//Actually Create each marker needed. ADD A NEW ONE FOR EACH IMAGE
+	
+	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
 	//actually create objects. Add one of these for every new marker, with a different name
-	createVideoCube('vid/kwasi.mp4', 'cube', markerRoot); //VIDEO 1
+	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
+	createVideoCube('vid/kwasi.mp4', 'cube', createMarker('markerRoot', 'pattern', 'data/data/patt.wv', arToolkitContext)); //VIDEO 1
 	createVideoCube('vid/tanvir.mp4', 'cube2', createMarker('markerRoot2', 'pattern', 'data/data/patt.2', arToolkitContext)); //IMAGE 2
-	createVideoCube('vid/farzana.mp4', 'cube3', markerRoot3); // IMAGE 3
-	createVideoCube('vid/handsome.mp4', 'cube4', markerRoot4);//IMAGE 4
+	createVideoCube('vid/farzana.mp4', 'cube3', createMarker('markerRoot3', 'pattern', 'data/data/patt.3', arToolkitContext)); // IMAGE 3
+	createVideoCube('vid/handsome.mp4', 'cube4', createMarker('markerRoot4', 'pattern', 'data/data/patt.wvcross', arToolkitContext));//IMAGE 4
 
 	///////////////////////////////////////////////////
 	//	CLICK HANDLING
