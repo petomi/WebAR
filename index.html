@@ -169,14 +169,37 @@
 	//TODO: pull these from config file as array, loop through array and for each, call createMarker with the correct variables; String(markerRoot + [i]), pattern, ...URL TO IMAGE DATA FROM FILE..., arToolkitContext
 	//TODO: pull these from config file as array, loop through array and for each, create videoCube with the correct variables; also have a possible createCube
 	//Actually Create each marker needed. ADD A NEW ONE FOR EACH IMAGE
-	
+
 	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
 	//actually create objects. Add one of these for every new marker, with a different name
 	//For each marker, run ARToolkit5/bin/mk_patt.exe and create a patt file for your marker. Then link it below.
-	createVideoCube('vid/kwasi.mp4', 'cube', createMarker('markerRoot', 'pattern', 'data/data/patt.wv', arToolkitContext)); //VIDEO 1
-	createVideoCube('vid/tanvir.mp4', 'cube2', createMarker('markerRoot2', 'pattern', 'data/data/patt.2', arToolkitContext)); //IMAGE 2
+	function AugmentedObject(patternSource, contentType, contentSource, clickEvent, UrlOnClick, UrlDescription){
+	  this.patternSource = patternSource; //location of pattern data for marker
+	  this.contentType = contentType; //type of media overlaid on physical marker
+	  this.contentSource = contentSource; //path to media to overlay
+	  this.clickEvent = clickEvent; //whether to have a click event or not
+	  this.UrlOnClick = UrlOnClick; //url of window to open on click
+	  this.UrlDescrip = UrlDescription; //title of window that opens
+	}
+
+	//called using:
+
+
+	var listOfObjects = [];
+	var Obj1 = new AugmentedObject("data/data/patt.2", "video", "vid/tanvir.mp4", True, "https://catalogue.worldvision.ca/products/5196430", "Sponsor Tanvir");
+	var Obj2 = new AugmentedObject("data/data/patt.3", "video", "vid/farzana.mp4", True, "https://catalogue.worldvision.ca/products/5770018", "Sponsor Farzana");
+	listOfObjects.push(Obj1);
+	listOfObjects.push(Obj2);
+	for (var i=0; i<listOfObjects.length; i++){
+		var currentObject = listOfObjects[i];
+		createVideoCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext);
+	}
+
+	//createVideoCube('vid/tanvir.mp4', String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', 'data/data/patt.2', arToolkitContext)); //VIDEO 1
+
+	/*createVideoCube('vid/tanvir.mp4', 'cube2', createMarker('markerRoot2', 'pattern', 'data/data/patt.2', arToolkitContext)); //IMAGE 2
 	createVideoCube('vid/farzana.mp4', 'cube3', createMarker('markerRoot3', 'pattern', 'data/data/patt.3', arToolkitContext)); // IMAGE 3
-	createVideoCube('vid/handsome.mp4', 'cube4', createMarker('markerRoot4', 'pattern', 'data/data/patt.wvcross', arToolkitContext));//IMAGE 4
+	createVideoCube('vid/handsome.mp4', 'cube4', createMarker('markerRoot4', 'pattern', 'data/data/patt.wvcross', arToolkitContext));//IMAGE 4*/
 
 	///////////////////////////////////////////////////
 	//	CLICK HANDLING
