@@ -24,7 +24,7 @@
 <script>
 
 	//////////////////////////////////////////////////////////////////////////////////
-	//		Init
+	//					Init
 	//////////////////////////////////////////////////////////////////////////////////
 
 	// init renderer//
@@ -40,43 +40,36 @@
 	renderer.domElement.style.left = '0px';
 	document.body.appendChild( renderer.domElement );
 
-	// initialize array of functions for the rendering loop
-	var onRenderFcts= [];
-
-	// init scene
-	var scene	= new THREE.Scene();
+	var onRenderFcts= []; // initialize array of functions for the rendering loop
+	var scene	= new THREE.Scene(); 	// init scene
 
 	//////////////////////////////////////////////////////////////////////////////////
-	//		Initialize a basic camera in 3d scene
+	//					Initialize a basic camera in 3d scene
 	//////////////////////////////////////////////////////////////////////////////////
 
-	// Create a camera
-	var camera = new THREE.PerspectiveCamera(); //change from just Camera() to PerspectiveCamera() or OrthographicCamera()?
+	// Create a camera and add to scene
+	var camera = new THREE.PerspectiveCamera();
 	scene.add(camera);
 
 	////////////////////////////////////////////////////////////////////////////////
-	//          handle arToolkitSource, define media input stream
+	//          Handle arToolkitSource, define media input stream
 	////////////////////////////////////////////////////////////////////////////////
 
 	var arToolkitSource = new THREEx.ArToolkitSource({
-		// to read from the webcam
-		sourceType : 'webcam',
+		sourceType : 'webcam', // to read from the webcam
 	});
 
 	arToolkitSource.init(function onReady(){
-		// handle resize of renderer
 		arToolkitSource.onResize(renderer.domElement);
 	});
 
-	// handle resize
 	window.addEventListener('resize', function(){
-		// handle arToolkitSource resize
 		arToolkitSource.onResize(renderer.domElement);
 	});
 
 
 	////////////////////////////////////////////////////////////////////////////////
-	//          initialize arToolkitContext
+	//          Initialize arToolkitContext
 	////////////////////////////////////////////////////////////////////////////////
 
 	// create atToolkitContext with default values
@@ -89,8 +82,7 @@
 	});
 	// initialize it
 	arToolkitContext.init(function onCompleted(){
-		// copy projection matrix to camera
-		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() );
+		camera.projectionMatrix.copy( arToolkitContext.getProjectionMatrix() ); // copy projection matrix to camera
 	});
 
 	// update artoolkit on every frame
@@ -116,16 +108,16 @@
 		return markerName;
 	}
 
-		//////////////////////////////////////////////////////////////////////////////////
-	//		add an object in the scene
-	//////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////
+	//					Object Creation Methods
+	////////////////////////////////////////////////////////////////////////////////
 
 	//creates six sided texture using whatever file is passed in, with one face a different texture
 	function createCubeTexture(texture){
 		var cubeMaterials = [
 			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
 			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
-			new THREE.MeshBasicMaterial({map: texture, transparent:false}), //this is the front facing side of the cube
+			new THREE.MeshBasicMaterial({map: texture, transparent:false}), //front facing side of cube
 			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
 			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
 			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
@@ -133,11 +125,9 @@
 		return cubeMaterials;
 	}
 
-	//TODO: ASSIGN OBJECT PROPERTIES BASED ON A LIST PASSED IN AS VARIABLE
-	//creates cube geometry and adds to render list
+	//creates cube geometry and adds to render list, as well as adding meta-properties such as external links
 	function createCubeGeometry(cubeMaterials, name, markerName, options){
 		nameToBe = name;
-
 		urlOnClick = options[0];
 		urlTitle = options[1];
 		clickEventTrue = options[2];
@@ -145,7 +135,7 @@
 		var geometry = new THREE.BoxGeometry(4,0.12,4); //make it a short plane, not a cube
 		name =  new THREE.Mesh(geometry, cubeMaterials);
 		name.name = nameToBe;
-		name.UrlOnClick = urlOnClick;
+		name.UrlOnClick = urlOnClick; //assign click event properties
 		name.UrlDescription = urlTitle;
 		name.clickEvent = clickEventTrue;
 		name.position.z = -1.0; //distance up from AR marker
@@ -153,7 +143,7 @@
 		markerName.add( name ); //add finished cube to render queue on marker root
 	}
 
-	//Object generator, creates cube above AR marker, using async texture loading to stream in texture
+	//Object generator, creates cube object to be placed above AR marker, using async texture loading to stream in texture
 	function createImageCube(texturePath, name, markerName, options){
 		var loader = new THREE.TextureLoader();
 		loader.load(
@@ -178,6 +168,11 @@
 		createCubeGeometry(cubeMaterials, name, markerName, options);
 		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
 	}
+
+
+	///////////////////////////////////////////////////
+	//	OBJECT CREATION FROM SETTINGS.JS
+	//////////////////////////////////////////////////
 
 	//Create all objects in list generated from Settings.js [LINKS TO SETTINGS.JS]
 	for (var i=0; i<listOfObjects.length; i++){
@@ -207,44 +202,14 @@
 		var intersects = raycaster.intersectObjects( scene.children, true ); //see if ray intersects any rendered objects
 
 		if(intersects.length > 0){
-			//console.log(intersects[0].object); //re-enable to debug, prints out object that is hit by ray
-
-			//TODO: pull the links from the same place as the cube types; these should each be objects and object1.link should be under case 1, etc. constructor loop!
-			//TODO: GENERATE CASES INSIDE FOR LOOP, PULLING FROM PREVIOUS PROPERTIE
-			//ADD A NEW CASE FOR EACH QR CODE
-			//handle different click cases based on which object is clicked (using object.name property)
-			console.log(intersects[ 0 ]);
-			console.log(intersects[ 0 ].object);
-			console.log(intersects[ 0 ].object.name);
-			console.log("Intersects enabled: "+ intersects[ 0 ].object.clickEvent);
-			console.log("URL redirect: " + intersects [ 0 ].object.UrlOnClick);
+			//open link contained as property within object hit by raycast, if click event is allowed
 			if (intersects[ 0 ].object.clickEvent == true) {
 				window.open(intersects[ 0 ].object.UrlOnClick, intersects[ 0 ].object.UrlDescription);
 			}
-
-
-
-/*
-			switch(intersects[ 0 ].object.name){
-				case 'cube':
-					window.open('https://catalogue.worldvision.ca/products/5903250', 'Sponsor Kwasi'); //LINK 1
-					break;
-				case 'cube2':
-					window.open('https://catalogue.worldvision.ca/products/5196430', 'Sponsor Tanvir'); //LINK 2
-					break;
-				case 'cube3':
-					window.open('https://catalogue.worldvision.ca/products/5770018', 'Sponsor Farzana'); //LINK 3
-					break;
-				case 'cube4':
-					window.open('https://catalogue.worldvision.ca/products/5733213', 'Sponsor Handsome'); //LINK 4
-					break;
-				default:
-					break;
-			}*/
 		}
 	}
 
-	//add event listener waiting for mobile touch and translate coordinates to click
+	//add event listener waiting for mobile touch and translate touch coordinates to click
 	document.addEventListener('touchstart', function(e){
 		clientX = e.touches[0].clientX;
 		clientY = e.touches[0].clientY;
@@ -253,7 +218,7 @@
 
 
 	//////////////////////////////////////////////////////////////////////////////////
-	//		render the whole thing on the page
+	//		Render the whole thing on the page
 	//////////////////////////////////////////////////////////////////////////////////
 
 	// //enables fps graph
