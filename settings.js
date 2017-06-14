@@ -6,7 +6,7 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
   this.contentType = contentType; //type of media overlaid on physical marker, choose "video" or "image"
   this.contentSource = contentSource; //path to media to overlay
   this.UrlOnClick = UrlOnClick; //url of window to open on click
-  this.UrlDescrip = UrlDescription; //title of window that opens
+  this.UrlDescription = UrlDescription; //title of window that opens
   this.clickEvent = clickEvent; //whether to have a click event or not, default should be true, can be overwritten using Augmentedobject.clickEvent = false;
 }
 
