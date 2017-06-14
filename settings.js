@@ -10,10 +10,7 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
   this.clickEvent = clickEvent; //whether to have a click event or not, default should be true, can be overwritten using Augmentedobject.clickEvent = false;
 }
 
-//  ADD THE OBJECTS YOU WANT TO APPEAR IN THE EXPERIENCE BELOW FOLLOWING THIS PATTERN:
-//  Create a new AugmentedObject for each one you want in the scene.
-
-/*  Follows this pattern:
+/*  Create a new AugmentedObject for each one you want in the scene. Follows this pattern:
 
     new AugmentedObject(
       PATH_TO_PATTERN_DATAFILE,
@@ -26,6 +23,20 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
 */
 
 var listOfObjects = [
-  new AugmentedObject("data/data/patt.2", "video", "vid/tanvir.mp4", "https://catalogue.worldvision.ca/products/5196430", "Sponsor Tanvir", true),
-  new AugmentedObject("data/data/patt.3", "video", "vid/farzana.mp4", "https://catalogue.worldvision.ca/products/5770018", "Sponsor Farzana", true)
+  new AugmentedObject(
+    "data/data/patt.2",
+    "video",
+    "vid/tanvir.mp4",
+    "https://catalogue.worldvision.ca/products/5196430",
+    "Sponsor Tanvir",
+    true
+  ),
+  new AugmentedObject(
+    "data/data/patt.3",
+    "video",
+    "vid/farzana.mp4",
+    "https://catalogue.worldvision.ca/products/5770018",
+    "Sponsor Farzana",
+    true
+  )
 ];
