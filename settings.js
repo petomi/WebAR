@@ -24,7 +24,7 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
 
 var listOfObjects = [
   new AugmentedObject(
-    "data/data/patt.2",
+    "data/data/patt.coffee",
     "video",
     "vid/coffee.mp4",
     "https://nochildforsale.ca/resource/coffee/",
@@ -32,7 +32,7 @@ var listOfObjects = [
     true
   ),
   new AugmentedObject(
-    "data/data/patt.3",
+    "data/data/patt.needle",
     "video",
     "vid/sweatshop.mp4",
     "https://nochildforsale.ca/resource/the-issue-cotton-and-child-labour/",
@@ -40,7 +40,7 @@ var listOfObjects = [
     true
   ),
   new AugmentedObject(
-    "data/data/patt.wv",
+    "data/data/patt.chocolate",
     "video",
     "vid/chocolate.mp4",
     "https://nochildforsale.ca/resource/infographic-chocolate/",
