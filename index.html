@@ -120,7 +120,7 @@
 	//		add an object in the scene
 	//////////////////////////////////////////////////////////////////////////////////
 
-	//creates six sided texture using whatever file is passed in
+	//creates six sided texture using whatever file is passed in, with one face a different texture
 	function createCubeTexture(texture){
 		var cubeMaterials = [
 			new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0}),
@@ -170,10 +170,15 @@
 		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
 	}
 
-	//CREATE ALL OBJECTS IN OBJECT LIST (WITH PROPERTIES PULLED FROM SETTINGS.JS)
+	//Create all objects in list generated from Settings.js
 	for (var i=0; i<listOfObjects.length; i++){
 		var currentObject = listOfObjects[i];
-		createVideoCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext));
+		if (currentObject.contentType === "video") {
+			createVideoCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext));
+		}
+		else if(currentObject.contentType === "image") {
+			createImageCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext));
+		}
 	}
 
 	///////////////////////////////////////////////////
@@ -190,17 +195,15 @@
 		mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
 		mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
 		raycaster.setFromCamera(mouse, camera); //cast ray in direction of mouse click
-		//raycaster.far = Infinity;
-
 		var intersects = raycaster.intersectObjects( scene.children, true ); //see if ray intersects any rendered objects
 
 		if(intersects.length > 0){
 			//console.log(intersects[0].object); //re-enable to debug, prints out object that is hit by ray
 
 			//TODO: pull the links from the same place as the cube types; these should each be objects and object1.link should be under case 1, etc. constructor loop!
-			//handle different click cases based on which object is clicked (using object.name property)
 			//TODO: GENERATE CASES INSIDE FOR LOOP, PULLING FROM PREVIOUS PROPERTIE
 			//ADD A NEW CASE FOR EACH QR CODE
+			//handle different click cases based on which object is clicked (using object.name property)
 			switch(intersects[ 0 ].object.name){
 				case 'cube':
 					window.open('https://catalogue.worldvision.ca/products/5903250', 'Sponsor Kwasi'); //LINK 1
@@ -218,7 +221,6 @@
 					break;
 			}
 		}
-		//console.log('Click detected.'); //re-enable to debug
 	}
 
 	//add event listener waiting for mobile touch and translate coordinates to click
@@ -233,13 +235,14 @@
 	//		render the whole thing on the page
 	//////////////////////////////////////////////////////////////////////////////////
 
-	////enables fps graph
+	// //enables fps graph
 	//var stats = new Stats();
 	//document.body.appendChild( stats.dom );
+
 	// render the scene
 	onRenderFcts.push(function(){
 		renderer.render( scene, camera );
-		//stats.update(); //uncomment to enable fps graph
+		//stats.update(); //update fps graph
 	})
 
 	// run the rendering loop
