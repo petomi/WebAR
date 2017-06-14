@@ -11,7 +11,7 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
 }
 
 //  ADD THE OBJECTS YOU WANT TO APPEAR IN THE EXPERIENCE BELOW FOLLOWING THIS PATTERN:
-//  new AugmentedObject(PATH_TO_PATTERN_DATAFILE, CONTENT_TYPE, PATH_TO_CONTENT, URL_TO_OPEN_ON_CLICK, NAME_OF_OPENED_WINDOW)
+//  new AugmentedObject(PATH_TO_PATTERN_DATAFILE, CONTENT_TYPE, PATH_TO_CONTENT, URL_TO_OPEN_ON_CLICK, NAME_OF_OPENED_WINDOW, WHETHER_TO_OPEN_SOMETHING_ON_CLICK)
 var listOfObjects = [
   new AugmentedObject("data/data/patt.2", "video", "vid/tanvir.mp4", "https://catalogue.worldvision.ca/products/5196430", "Sponsor Tanvir", true),
   new AugmentedObject("data/data/patt.3", "video", "vid/farzana.mp4", "https://catalogue.worldvision.ca/products/5770018", "Sponsor Farzana", true)
