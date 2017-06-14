@@ -2,7 +2,7 @@
 
 //  Prototype object which will be created from config file
 function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, UrlDescription, clickEvent){
-  this.patternSource = patternSource; //location of pattern data file for marker. These are generated using ARToolkit5/bin/mk_patt.exe
+  this.patternSource = patternSource; //location of pattern data file for marker. THESE ARE GENERATED USING ARToolkit5/bin/mk_patt.exe
   this.contentType = contentType; //type of media overlaid on physical marker, choose "video" or "image"
   this.contentSource = contentSource; //path to media to overlay
   this.UrlOnClick = UrlOnClick; //url of window to open on click
@@ -10,7 +10,7 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
   this.clickEvent = clickEvent; //whether to have a click event or not, default should be true, can be overwritten using Augmentedobject.clickEvent = false;
 }
 
-/*  Create a new AugmentedObject for each one you want in the scene. Follows this pattern:
+/*  Append a new AugmentedObject for each one you want in the scene. Follows this pattern:
 
     new AugmentedObject(
       PATH_TO_PATTERN_DATAFILE,
@@ -26,17 +26,25 @@ var listOfObjects = [
   new AugmentedObject(
     "data/data/patt.2",
     "video",
-    "vid/tanvir.mp4",
-    "https://catalogue.worldvision.ca/products/5196430",
-    "Sponsor Tanvir",
+    "vid/coffee.mp4",
+    "https://nochildforsale.ca/resource/coffee/",
+    "Coffee",
     true
   ),
   new AugmentedObject(
     "data/data/patt.3",
     "video",
-    "vid/farzana.mp4",
-    "https://catalogue.worldvision.ca/products/5770018",
-    "Sponsor Farzana",
+    "vid/sweatshop.mp4",
+    "https://nochildforsale.ca/resource/the-issue-cotton-and-child-labour/",
+    "Sweatshop",
+    true
+  ),
+  new AugmentedObject(
+    "data/data/patt.wv",
+    "video",
+    "vid/chocolate.mp4",
+    "https://nochildforsale.ca/resource/infographic-chocolate/",
+    "Chocolate",
     true
   )
 ];
