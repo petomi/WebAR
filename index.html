@@ -136,12 +136,15 @@
 	//TODO: ASSIGN OBJECT PROPERTIES BASED ON A LIST PASSED IN AS VARIABLE
 	//creates cube geometry and adds to render list
 	function createCubeGeometry(cubeMaterials, options){
-		nameToBe = options[0];
-		markerName = options[1];
+		name = options[0];
+		nameToBe = name;
 
+		var markerName = options[1];
+		var urlOnClick = options[2];
+		var urlTitle = options[3];
+		var clickEventToggle = options[4];
 
 		var geometry = new THREE.BoxGeometry(4,0.12,4); //make it a short plane, not a cube
-		nameToBe = name;
 		name =  new THREE.Mesh(geometry, cubeMaterials);
 		name.name = nameToBe;
 		name.UrlOnClick = "www.google.com";
@@ -180,10 +183,10 @@
 	for (var i=0; i<listOfObjects.length; i++){
 		var currentObject = listOfObjects[i];
 		if (currentObject.contentType === "video") {
-			createVideoCube(currentObject.contentSource, [String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext)]);
+			createVideoCube(currentObject.contentSource, [String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext), currentObject.UrlOnClick, currentObject.UrlDescription, currentObject.clickEvent]);
 		}
 		else if(currentObject.contentType === "image") {
-			createImageCube(currentObject.contentSource, [String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext)]);
+			createImageCube(currentObject.contentSource, [String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext), currentObject.UrlOnClick, currentObject.UrlDescription, currentObject.clickEvent]);
 		}
 	}
 
