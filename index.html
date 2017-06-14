@@ -135,7 +135,11 @@
 
 	//TODO: ASSIGN OBJECT PROPERTIES BASED ON A LIST PASSED IN AS VARIABLE
 	//creates cube geometry and adds to render list
-	function createCubeGeometry(cubeMaterials, name, markerName){
+	function createCubeGeometry(cubeMaterials, options){
+		nameToBe = options[0];
+		markerName = options[1];
+
+
 		var geometry = new THREE.BoxGeometry(4,0.12,4); //make it a short plane, not a cube
 		nameToBe = name;
 		name =  new THREE.Mesh(geometry, cubeMaterials);
@@ -147,20 +151,20 @@
 	}
 
 	//Object generator, creates cube above AR marker, using async texture loading to stream in texture
-	function createImageCube(texturePath, name, markerName){
+	function createImageCube(texturePath, options){
 		var loader = new THREE.TextureLoader();
 		loader.load(
 			texturePath,
 			function(texture){
 				texture.minFilter = THREE.LinearFilter; //avoid resizing to power of two
 				cubeMaterials = createCubeTexture(texture);
-				createCubeGeometry(cubeMaterials, name, markerName);
+				createCubeGeometry(cubeMaterials, options);
 			}
 		);
 	}
 
 	//Object generator, creates video cube above AR marker (VideoTexture automatically uses async streaming)
-	function createVideoCube(videoPath, name, markerName){
+	function createVideoCube(videoPath, options){
 		var videoTexture = new THREEx.VideoTexture(videoPath);
 		var video = videoTexture.video;
 		videoTexture.texture.minFilter = THREE.LinearFilter; //filter texture to avoid resizing to power of two
@@ -168,7 +172,7 @@
 			videoTexture.update(delta, now);
 		});
 		cubeMaterials = createCubeTexture(videoTexture.texture);
-		createCubeGeometry(cubeMaterials, name, markerName);
+		createCubeGeometry(cubeMaterials, options);
 		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
 	}
 
@@ -176,10 +180,10 @@
 	for (var i=0; i<listOfObjects.length; i++){
 		var currentObject = listOfObjects[i];
 		if (currentObject.contentType === "video") {
-			createVideoCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext));
+			createVideoCube(currentObject.contentSource, [String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext)]);
 		}
 		else if(currentObject.contentType === "image") {
-			createImageCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext));
+			createImageCube(currentObject.contentSource, [String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext)]);
 		}
 	}
 
