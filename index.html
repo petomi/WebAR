@@ -159,7 +159,7 @@
 			function(texture){
 				texture.minFilter = THREE.LinearFilter; //avoid resizing to power of two
 				cubeMaterials = createCubeTexture(texture);
-				createCubeGeometry(cubeMaterials, options);
+				createCubeGeometry(cubeMaterials,name, markerName, options);
 			}
 		);
 	}
@@ -173,7 +173,7 @@
 			videoTexture.update(delta, now);
 		});
 		cubeMaterials = createCubeTexture(videoTexture.texture);
-		createCubeGeometry(cubeMaterials, options);
+		createCubeGeometry(cubeMaterials, name, markerName, options);
 		video.play() //may need pause when exits from view for optimization purposes. Keep video files small.
 	}
 
