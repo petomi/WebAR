@@ -7,7 +7,7 @@ function AugmentedObject(patternSource, contentType, contentSource, UrlOnClick, 
   this.contentSource = contentSource; //path to media to overlay
   this.UrlOnClick = UrlOnClick; //url of window to open on click
   this.UrlDescrip = UrlDescription; //title of window that opens
-  this.clickEvent = true; //whether to have a click event or not, default should be true, can be overwritten using Augmentedobject.clickEvent = false;
+  this.clickEvent = clickEvent; //whether to have a click event or not, default should be true, can be overwritten using Augmentedobject.clickEvent = false;
 }
 
 //  ADD THE OBJECTS YOU WANT TO APPEAR IN THE EXPERIENCE BELOW FOLLOWING THIS PATTERN:
