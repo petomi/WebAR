@@ -135,13 +135,12 @@
 
 	//TODO: ASSIGN OBJECT PROPERTIES BASED ON A LIST PASSED IN AS VARIABLE
 	//creates cube geometry and adds to render list
-	function createCubeGeometry(cubeMaterials, name, options){
+	function createCubeGeometry(cubeMaterials, name, markerName, options){
 		nameToBe = name;
 
-		var markerName = options[0];
-		var urlOnClick = options[1];
-		var urlTitle = options[2];
-		var clickEventToggle = options[3];
+		urlOnClick = options[0];
+		urlTitle = options[1];
+		clickEventToggle = options[2];
 
 		var geometry = new THREE.BoxGeometry(4,0.12,4); //make it a short plane, not a cube
 		name =  new THREE.Mesh(geometry, cubeMaterials);
@@ -153,7 +152,7 @@
 	}
 
 	//Object generator, creates cube above AR marker, using async texture loading to stream in texture
-	function createImageCube(texturePath, options){
+	function createImageCube(texturePath, name, markerName, options){
 		var loader = new THREE.TextureLoader();
 		loader.load(
 			texturePath,
@@ -166,7 +165,7 @@
 	}
 
 	//Object generator, creates video cube above AR marker (VideoTexture automatically uses async streaming)
-	function createVideoCube(videoPath, options){
+	function createVideoCube(videoPath, name, markerName, options){
 		var videoTexture = new THREEx.VideoTexture(videoPath);
 		var video = videoTexture.video;
 		videoTexture.texture.minFilter = THREE.LinearFilter; //filter texture to avoid resizing to power of two
@@ -182,10 +181,10 @@
 	for (var i=0; i<listOfObjects.length; i++){
 		var currentObject = listOfObjects[i];
 		if (currentObject.contentType === "video") {
-			createVideoCube(currentObject.contentSource, String('cube'+ i), [createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext), currentObject.UrlOnClick, currentObject.UrlDescription, currentObject.clickEvent]);
+			createVideoCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext), [currentObject.UrlOnClick, currentObject.UrlDescription, currentObject.clickEvent]);
 		}
 		else if(currentObject.contentType === "image") {
-			createImageCube(currentObject.contentSource, String('cube'+ i), [createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext), currentObject.UrlOnClick, currentObject.UrlDescription, currentObject.clickEvent]);
+			createImageCube(currentObject.contentSource, String('cube'+ i), createMarker(String('markerRoot' + i), 'pattern', currentObject.patternSource, arToolkitContext), [currentObject.UrlOnClick, currentObject.UrlDescription, currentObject.clickEvent]);
 		}
 	}
 
