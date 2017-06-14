@@ -204,6 +204,13 @@
 			//TODO: GENERATE CASES INSIDE FOR LOOP, PULLING FROM PREVIOUS PROPERTIE
 			//ADD A NEW CASE FOR EACH QR CODE
 			//handle different click cases based on which object is clicked (using object.name property)
+			if (intersects[0].object.clickEvent == True) {
+				window.open(intersects[0].object.UrlOnClick, intersects[0].object.UrlDescription);
+			}
+
+
+
+/*
 			switch(intersects[ 0 ].object.name){
 				case 'cube':
 					window.open('https://catalogue.worldvision.ca/products/5903250', 'Sponsor Kwasi'); //LINK 1
@@ -219,7 +226,7 @@
 					break;
 				default:
 					break;
-			}
+			}*/
 		}
 	}
 
